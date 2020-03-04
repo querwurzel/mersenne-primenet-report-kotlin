@@ -42,6 +42,7 @@ class Result : Serializable {
     private var ghzDays: String? = null
 
     private var assignmentAge: String? = null
+    @Column(length = 512)
     private var message: String? = null
 
     @Transient
