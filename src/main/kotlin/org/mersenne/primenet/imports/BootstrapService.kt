@@ -63,7 +63,7 @@ class BootstrapService @Autowired constructor(
 
     private fun bootstrapDailyImports() {
         val days = this.selectDailyImports(importStart)
-        if (!days.isEmpty()) {
+        if (days.isNotEmpty()) {
             log.info("Importing {} daily results as of {}", days.size, importStart)
             days.forEach { importService.importDailyResults(it) }
             log.info("Imported daily results")

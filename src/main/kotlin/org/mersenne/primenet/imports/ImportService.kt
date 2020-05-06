@@ -34,8 +34,8 @@ class ImportService @Autowired constructor(
     protected fun processPendingImports() {
         val imports = importRepository.findTop180ByState(Import.State.PENDING)
 
-        if (!imports.isEmpty()) {
-            log.info("Scheduling {} imports", imports.size)
+        if (imports.isNotEmpty()) {
+            log.info("Scheduling pending {} imports", imports.size)
             imports.forEach { this.importDailyResults(it) }
             log.info("Processed {} imports", imports.size)
         }
@@ -46,7 +46,7 @@ class ImportService @Autowired constructor(
         val threshold = LocalDateTime.now().minusHours(12)
         val imports = importRepository.findAllByStateAndLastAttemptBefore(Import.State.ACTIVE, threshold)
 
-        if (!imports.isEmpty()) {
+        if (imports.isNotEmpty()) {
             log.warn("Found {} stale imports; resetting!", imports.size)
             imports.forEach { theImport ->
                 theImport.reset()
