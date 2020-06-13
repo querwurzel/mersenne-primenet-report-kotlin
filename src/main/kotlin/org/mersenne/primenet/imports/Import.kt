@@ -3,7 +3,6 @@ package org.mersenne.primenet.imports
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Objects
 import javax.persistence.*
 
 @Entity
@@ -15,7 +14,7 @@ class Import() : Serializable {
     }
 
     constructor(date: LocalDate) : this() {
-        this.date = Objects.requireNonNull(date)
+        this.date = date
     }
 
     @Id

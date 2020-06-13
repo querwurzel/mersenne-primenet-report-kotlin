@@ -30,6 +30,14 @@ class ImportService @Autowired constructor(
 
     private val log = LoggerFactory.getLogger(ImportService::class.java)
 
+    @Scheduled(cron = "33 33 3 * * *")
+    protected fun processYesterdayImport() {
+        val yesterday = LocalDate.now().minusDays(1)
+        log.info("Importing results from yesterday [{}]", yesterday)
+        this.importDailyResults(yesterday)
+        System.gc()
+    }
+
     @Scheduled(initialDelay = 2 * 60 * 1000, fixedDelay = 60 * 60 * 1000)
     protected fun processPendingImports() {
         val imports = importRepository.findTop180ByState(Import.State.PENDING)
@@ -38,6 +46,7 @@ class ImportService @Autowired constructor(
             log.info("Scheduling pending {} imports", imports.size)
             imports.forEach { this.importDailyResults(it) }
             log.info("Processed {} imports", imports.size)
+            System.gc()
         }
     }
 
@@ -47,12 +56,13 @@ class ImportService @Autowired constructor(
         val imports = importRepository.findAllByStateAndLastAttemptBefore(Import.State.ACTIVE, threshold)
 
         if (imports.isNotEmpty()) {
-            log.warn("Found {} stale imports; resetting!", imports.size)
+            log.warn("Resetting {} stale imports!", imports.size)
             imports.forEach { theImport ->
                 theImport.reset()
                 resultRepository.deleteAllByDate(theImport.date)
             }
             importRepository.saveAll(imports)
+            System.gc()
         }
     }
 
@@ -73,12 +83,15 @@ class ImportService @Autowired constructor(
         }
     }
 
+    internal fun importDailyResults(date: LocalDate) {
+        this.importDailyResults(Import(date))
+    }
+
     private fun importDailyResults(archive: ByteArray) {
         try {
             val results = this.parseResults(archive)
             val date = results.parseDate()
-            val theImport = Import(date).nextAttempt()
-            this.persistImportAndResults(theImport, results)
+            this.importDailyResults(date, results)
         } catch (e: IOException) {
             log.error("Failed to parse some results of annual archive", e)
         } catch (e: XMLStreamException) {
@@ -86,8 +99,13 @@ class ImportService @Autowired constructor(
         }
     }
 
-    internal fun importDailyResults(date: LocalDate) {
-        this.importDailyResults(Import(date))
+    private fun importDailyResults(date: LocalDate, results: Results) {
+        try {
+            val theImport = importRepository.save(Import(date).nextAttempt())
+            this.persistImportAndResults(theImport, results)
+        } catch (e: DataIntegrityViolationException) {
+            log.info("Import of {} already exists", date)
+        }
     }
 
     private fun importDailyResults(anImport: Import) {
@@ -118,7 +136,9 @@ class ImportService @Autowired constructor(
 
     @Throws(IOException::class, XMLStreamException::class)
     private fun parseResults(archive: ByteArray): Results {
-        Bzip2.extract(archive).use { input -> return resultParser.parseResults(input) }
+        Bzip2.stream(archive).use {
+            return resultParser.parseResults(it)
+        }
     }
 
     @Throws(IOException::class, NoSuchElementException::class)
@@ -128,21 +148,19 @@ class ImportService @Autowired constructor(
         return archives
     }
 
-    private fun persistImportAndResults(anImport: Import, result: Results) {
-        try {
-            val theImport = importRepository.save(anImport.succeeded())
+    private fun persistImportAndResults(theImport: Import, result: Results) {
+        val count = result.size
 
-            if (result.notEmpty()) {
-                val results = result.results
-                        .map {resultMapper(theImport, it) }
-                        .toList()
+        result.lines
+                .map {
+                    result.lines.remove(it)
+                    resultMapper(theImport, it)
+                }
+                .chunked(10_000)
+                .forEach { resultRepository.saveAll(it) }
 
-                resultRepository.saveAll<Result>(results)
-                log.info("Imported {} results of {}", String.format("%1$6s", results.size), theImport.date)
-            }
-        } catch (e: DataIntegrityViolationException) {
-            log.info("Import of {} already exists", anImport.date)
-        }
+        importRepository.save(theImport.succeeded())
+        log.info("Imported {} results of {}", String.format("%1$6s", count), theImport.date)
     }
 
     companion object {

@@ -8,11 +8,10 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.annotation.Async
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
-import java.util.TreeSet
+import java.util.*
 
 @Service
 class BootstrapService @Autowired constructor(
@@ -43,13 +42,6 @@ class BootstrapService @Autowired constructor(
                 System.gc()
             }
         }
-    }
-
-    @Scheduled(cron = "33 33 3 * * *")
-    protected fun bootstrapYesterdayImport() {
-        val yesterday = LocalDate.now().minusDays(1)
-        log.info("Importing results from yesterday [{}]", yesterday)
-        importService.importDailyResults(yesterday)
     }
 
     private fun bootstrapAnnualImports() {

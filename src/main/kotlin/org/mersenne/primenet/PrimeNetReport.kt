@@ -10,11 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableScheduling
 @EnableConfigurationProperties(PrimeNetProperties::class)
 @SpringBootApplication
-class PrimeNetReport {
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplication.run(PrimeNetReport::class.java, *args)
-        }
-    }
+class PrimeNetReport
+
+fun main(args: Array<String>) {
+    SpringApplication.run(PrimeNetReport::class.java, *args)
 }

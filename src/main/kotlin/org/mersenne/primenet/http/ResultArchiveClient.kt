@@ -24,7 +24,9 @@ class ResultArchiveClient @Autowired constructor(
     fun fetchDailyReport(date: LocalDate): ByteArray {
         // https://www.mersenne.org/result_archive/2019/2019-01-29.xml.bz2
         val url = String.format(dailyUrl, date.year, date.format(DateTimeFormatter.ISO_LOCAL_DATE))
-        return this.fetchDailyReport(url)
+        val archive = this.fetchDailyReport(url)
+        log.debug("Fetched {} bytes for daily report of {}", archive.size, date.format(DateTimeFormatter.ISO_LOCAL_DATE))
+        return archive
     }
 
     fun fetchDailyReport(url: String): ByteArray {
@@ -35,7 +37,9 @@ class ResultArchiveClient @Autowired constructor(
     fun fetchAnnualReport(date: LocalDate): ByteArray {
         // https://www.mersenne.org/result_archive/2018.7z
         val url = String.format(annualUrl, date.year)
-        return this.fetchAnnualReport(url)
+        val archive = this.fetchAnnualReport(url)
+        log.debug("Fetched {} bytes for annual report of {}", archive.size, date.year)
+        return archive
     }
 
     fun fetchAnnualReport(url: String): ByteArray {

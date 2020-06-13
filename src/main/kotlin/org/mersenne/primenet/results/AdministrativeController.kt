@@ -25,7 +25,7 @@ class AdministrativeController @Autowired constructor(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     protected fun getMetaData() = this.meta.get()
 
-    @Scheduled(initialDelay = (60 * 1000).toLong(), fixedDelay = (60 * 60 * 1000).toLong())
+    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
     protected fun refreshMeta() {
         this.meta.set(Meta()
                 .setResults(administrativeService.countResults())
@@ -42,7 +42,7 @@ class AdministrativeController @Autowired constructor(
 
         val user = UserMeta()
 
-        var results: Long = 0
+        val results = ResultMeta()
 
         constructor()
 
@@ -50,8 +50,8 @@ class AdministrativeController @Autowired constructor(
             this.setUser(user)
         }
 
-        fun setResults(results: Long): Meta {
-            this.results = results
+        fun setResults(total: Long): Meta {
+            this.results.total = total
             return this
         }
 
@@ -60,8 +60,8 @@ class AdministrativeController @Autowired constructor(
             return this
         }
 
-        fun setUserResults(results: Long): Meta {
-            this.user.total = results
+        fun setUserResults(total: Long): Meta {
+            this.user.total = total
             return this
         }
 
@@ -81,4 +81,8 @@ class AdministrativeController @Autowired constructor(
     ) {
         fun getTotal() = this.states.values.stream().mapToLong { value -> value }.sum()
     }
+
+    protected data class ResultMeta (
+            var total: Long = 0
+    )
 }

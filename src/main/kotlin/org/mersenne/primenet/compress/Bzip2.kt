@@ -9,6 +9,12 @@ class Bzip2 private constructor() {
     companion object {
         @JvmStatic
         @Throws(IOException::class)
+        fun stream(archive: ByteArray): InputStream {
+            return BZip2CompressorInputStream(ByteArrayInputStream(archive))
+        }
+
+        @JvmStatic
+        @Throws(IOException::class)
         fun extract(archive: ByteArray): InputStream = BZip2CompressorInputStream(ByteArrayInputStream(archive))
     }
 }

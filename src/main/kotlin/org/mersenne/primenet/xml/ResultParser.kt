@@ -13,7 +13,7 @@ import org.mersenne.primenet.xml.ResultParser.ResultSchema.RESULTTYPE
 import org.mersenne.primenet.xml.ResultParser.ResultSchema.USERNAME
 import org.springframework.stereotype.Component
 import java.io.InputStream
-import java.util.ArrayList
+import java.util.*
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLInputFactory
 
@@ -22,6 +22,8 @@ class ResultParser {
 
     companion object {
         private val factory = XMLInputFactory.newFactory()
+
+        private const val GIMPS_DAILY_AVG = 37665
 
         init {
             factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false)
@@ -32,7 +34,7 @@ class ResultParser {
 
     fun parseResults(stream: InputStream): Results {
         val reader = factory.createXMLEventReader(stream)
-        val lines = ArrayList<ResultLine>()
+        val lines: Queue<ResultLine> = ArrayDeque(GIMPS_DAILY_AVG)
         val results = Results(lines)
 
         try {
