@@ -4,5 +4,5 @@
  | | |_ | | | | |\/| |  ___/ \___ \
  | |__| |_| |_| |  | | |     ____) |
   \_____|_____|_|  |_|_|    |_____/
- :: Spring Boot :: ${application.version}
+
  :: https://www.mersenne.org/ ::
