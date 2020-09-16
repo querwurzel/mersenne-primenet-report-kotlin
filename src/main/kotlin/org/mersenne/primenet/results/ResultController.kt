@@ -28,7 +28,7 @@ class ResultController @Autowired constructor(
         return ResponseEntity
                 .status(
                         if (results.isEmpty())
-                            HttpStatus.NOT_FOUND
+                            HttpStatus.NO_CONTENT
                         else
                             HttpStatus.OK)
                 .body(results)
