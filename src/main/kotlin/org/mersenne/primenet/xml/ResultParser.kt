@@ -23,7 +23,8 @@ class ResultParser {
     companion object {
         private val factory = XMLInputFactory.newFactory()
 
-        private const val GIMPS_DAILY_AVG = 37665
+        // select avg(c.c) from (select count(date) as c from results group by date) as c;
+        private const val GIMPS_DAILY_AVG = 40_057
 
         init {
             factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false)
