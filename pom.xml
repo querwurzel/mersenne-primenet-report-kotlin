@@ -14,7 +14,7 @@
     <name>PrimeNetReport-Kotlin</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <kotlin.version>1.7.20</kotlin.version>
         <mysql.version>8.0.31</mysql.version>
         <apache.compress.version>1.21</apache.compress.version>
