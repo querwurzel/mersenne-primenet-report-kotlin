@@ -1,7 +1,10 @@
-package org.mersenne.primenet.results
+package org.mersenne.primenet.meta
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.mersenne.primenet.PrimeNetProperties
 import org.mersenne.primenet.imports.Import.State
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
@@ -13,10 +16,12 @@ import java.util.concurrent.atomic.AtomicReference
 
 @RestController
 @RequestMapping("/results/meta")
-class AdministrativeController @Autowired constructor(
+class MetaController @Autowired constructor(
         primeNetProperties: PrimeNetProperties,
-        private val administrativeService: AdministrativeService
+        private val metaService: MetaService
 ) {
+
+    private val log = LoggerFactory.getLogger(MetaController::class.java)
 
     private val identity = primeNetProperties.identity
 
@@ -28,10 +33,10 @@ class AdministrativeController @Autowired constructor(
     @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
     protected fun refreshMeta() {
         this.meta.set(Meta()
-                .setResults(administrativeService.countResults())
-                .setImportStates(administrativeService.countImportsPerState())
+                .setResults(metaService.countResults())
+                .setImportStates(metaService.countImportsPerState())
                 .setUser(identity)
-                .setUserResults(administrativeService.countResultsByUserName(identity)))
+                .setUserResults(metaService.countResultsByUserName(identity)))
     }
 
     protected inner class Meta {

@@ -1,12 +1,13 @@
-package org.mersenne.primenet.results
+package org.mersenne.primenet.meta
 
 import org.mersenne.primenet.imports.Import.State
 import org.mersenne.primenet.imports.ImportRepository
+import org.mersenne.primenet.results.ResultRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class AdministrativeService @Autowired constructor(
+class MetaService @Autowired constructor(
         private val importRepository: ImportRepository,
         private val resultRepository: ResultRepository
 ) {

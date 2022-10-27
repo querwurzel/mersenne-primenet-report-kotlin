@@ -2,7 +2,7 @@ package org.mersenne.primenet.imports
 
 import org.mersenne.primenet.compress.Bzip2
 import org.mersenne.primenet.compress.SevenZip
-import org.mersenne.primenet.http.ResultArchiveClient
+import org.mersenne.primenet.api.ResultArchiveClient
 import org.mersenne.primenet.results.Result
 import org.mersenne.primenet.results.ResultRepository
 import org.mersenne.primenet.xml.ResultLine
