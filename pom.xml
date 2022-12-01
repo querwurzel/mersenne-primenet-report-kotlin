@@ -15,7 +15,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.7.20</kotlin.version>
+        <kotlin.version>1.7.22</kotlin.version>
         <mysql.version>8.0.31</mysql.version>
         <apache.compress.version>1.22</apache.compress.version>
         <xz.version>1.9</xz.version>
